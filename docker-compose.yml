@@ -29,7 +29,7 @@ services:
       - NODE_ENV=development
       - PORT=3000
       - FRONTEND_URL=${FRONTEND_URL:-http://localhost:5173}
-      - JWT_SECRET=${JWT_SECRET:-dsdds34hjas23xnssd@#$DDSE#$sdsdscvd56&*^vdqwsx&^%$#sjsdksjsk@##$$$#@!asweokeslslkldcnvfmntrpo09876tg3234jwxncvzlk}
+      - JWT_SECRET=${JWT_SECRET}
       - AUTH_SERVICE_URL=http://auth-service:3002
       - USER_SERVICE_URL=http://user-service:3003
       - POST_SERVICE_URL=http://post-service:3004
@@ -82,7 +82,7 @@ services:
       - PORT=3002
       - DB_URL=${DB_URL:-mongodb://mongo:27017/socially_auth}
       - AUTH_DB_URL=${AUTH_DB_URL}
-      - JWT_SECRET=${JWT_SECRET:-dsdds34hjas23xnssd@#$DDSE#$sdsdscvd56&*^vdqwsx&^%$#sjsdksjsk@##$$$#@!asweokeslslkldcnvfmntrpo09876tg3234jwxncvzlk}
+      - JWT_SECRET=${JWT_SECRET}
       - JWT_EXPIRES_IN=${JWT_EXPIRES_IN:-1d}
       - COOKIE_EXPIRES_IN=${COOKIE_EXPIRES_IN:-86400000}
       - BREVO_API_KEY=${BREVO_API_KEY}
@@ -108,15 +108,15 @@ services:
       - PORT=3003
       - DB_URL=${DB_URL:-mongodb://mongo:27017/socially_users}
       - USER_DB_URL=${USER_DB_URL}
-      - JWT_SECRET=${JWT_SECRET:-dsdds34hjas23xnssd@#$DDSE#$sdsdscvd56&*^vdqwsx&^%$#sjsdksjsk@##$$$#@!asweokeslslkldcnvfmntrpo09876tg3234jwxncvzlk}
+      - JWT_SECRET=${JWT_SECRET}
       - REDIS_URL=redis://redis:6379
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - AWS_REGION=${AWS_REGION:-ap-south-1}
       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-      - S3_BUCKET_NAME=${S3_BUCKET_NAME:-socially-media}
-      - S3_PUBLIC_URL=${S3_PUBLIC_URL:-https://socially-media.s3.ap-south-1.amazonaws.com}
+      - S3_BUCKET_NAME=${S3_BUCKET_NAME}
+      - S3_PUBLIC_URL=${S3_PUBLIC_URL}
     depends_on:
       redis:
         condition: service_healthy
@@ -136,15 +136,15 @@ services:
       - PORT=3004
       - DB_URL=${DB_URL:-mongodb://mongo:27017/socially_posts}
       - POST_DB_URL=${POST_DB_URL}
-      - JWT_SECRET=${JWT_SECRET:-dsdds34hjas23xnssd@#$DDSE#$sdsdscvd56&*^vdqwsx&^%$#sjsdksjsk@##$$$#@!asweokeslslkldcnvfmntrpo09876tg3234jwxncvzlk}
+      - JWT_SECRET=${JWT_SECRET}
       - REDIS_URL=redis://redis:6379
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - AWS_REGION=${AWS_REGION:-ap-south-1}
       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-      - S3_BUCKET_NAME=${S3_BUCKET_NAME:-socially-media}
-      - S3_PUBLIC_URL=${S3_PUBLIC_URL:-https://socially-media.s3.ap-south-1.amazonaws.com}
+      - S3_BUCKET_NAME=${S3_BUCKET_NAME}
+      - S3_PUBLIC_URL=${S3_PUBLIC_URL}
     depends_on:
       redis:
         condition: service_healthy
@@ -164,15 +164,15 @@ services:
       - PORT=3005
       - DB_URL=${DB_URL:-mongodb://mongo:27017/socially_chat}
       - CHAT_DB_URL=${CHAT_DB_URL}
-      - JWT_SECRET=${JWT_SECRET:-dsdds34hjas23xnssd@#$DDSE#$sdsdscvd56&*^vdqwsx&^%$#sjsdksjsk@##$$$#@!asweokeslslkldcnvfmntrpo09876tg3234jwxncvzlk}
+      - JWT_SECRET=${JWT_SECRET}
       - REDIS_URL=redis://redis:6379
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - AWS_REGION=${AWS_REGION:-ap-south-1}
       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-      - S3_BUCKET_NAME=${S3_BUCKET_NAME:-socially-media}
-      - S3_PUBLIC_URL=${S3_PUBLIC_URL:-https://socially-media.s3.ap-south-1.amazonaws.com}
+      - S3_BUCKET_NAME=${S3_BUCKET_NAME}
+      - S3_PUBLIC_URL=${S3_PUBLIC_URL}
     depends_on:
       redis:
         condition: service_healthy
@@ -192,7 +192,7 @@ services:
       - PORT=3006
       - DB_URL=${DB_URL:-mongodb://mongo:27017/socially_notifications}
       - NOTIFICATION_DB_URL=${NOTIFICATION_DB_URL}
-      - JWT_SECRET=${JWT_SECRET:-dsdds34hjas23xnssd@#$DDSE#$sdsdscvd56&*^vdqwsx&^%$#sjsdksjsk@##$$$#@!asweokeslslkldcnvfmntrpo09876tg3234jwxncvzlk}
+      - JWT_SECRET=${JWT_SECRET}
       - REDIS_URL=redis://redis:6379
       - REDIS_HOST=redis
       - REDIS_PORT=6379
