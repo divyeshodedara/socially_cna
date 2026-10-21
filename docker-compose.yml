@@ -1,0 +1,210 @@
+version: "3.8"
+
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: socially-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - socially-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  api-gateway:
+    build:
+      context: .
+      dockerfile: services/api-gateway/Dockerfile
+    container_name: socially-api-gateway
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      - FRONTEND_URL=${FRONTEND_URL:-http://localhost:5173}
+      - JWT_SECRET=${JWT_SECRET:-dsdds34hjas23xnssd@#$DDSE#$sdsdscvd56&*^vdqwsx&^%$#sjsdksjsk@##$$$#@!asweokeslslkldcnvfmntrpo09876tg3234jwxncvzlk}
+      - AUTH_SERVICE_URL=http://auth-service:3002
+      - USER_SERVICE_URL=http://user-service:3003
+      - POST_SERVICE_URL=http://post-service:3004
+      - CHAT_SERVICE_URL=http://chat-service:3005
+      - NOTIFICATION_SERVICE_URL=http://notification-service:3006
+      - REALTIME_SERVICE_URL=http://realtime-service:3001
+    depends_on:
+      - auth-service
+      - user-service
+      - post-service
+      - chat-service
+      - notification-service
+      - realtime-service
+    networks:
+      - socially-network
+
+  realtime-service:
+    build:
+      context: .
+      dockerfile: services/realtime-service/Dockerfile
+    container_name: socially-realtime-service
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=development
+      - PORT=3001
+      - FRONTEND_URL=${FRONTEND_URL:-http://localhost:5173}
+      - REDIS_URL=redis://redis:6379
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - CHAT_SERVICE_URL=http://chat-service:3005
+      - NOTIFICATION_SERVICE_URL=http://notification-service:3006
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - socially-network
+
+  auth-service:
+    build:
+      context: .
+      dockerfile: services/auth-service/Dockerfile
+    container_name: socially-auth-service
+    restart: unless-stopped
+    ports:
+      - "3002:3002"
+    environment:
+      - NODE_ENV=development
+      - PORT=3002
+      - DB_URL=${DB_URL:-mongodb://mongo:27017/socially_auth}
+      - AUTH_DB_URL=${AUTH_DB_URL}
+      - JWT_SECRET=${JWT_SECRET:-dsdds34hjas23xnssd@#$DDSE#$sdsdscvd56&*^vdqwsx&^%$#sjsdksjsk@##$$$#@!asweokeslslkldcnvfmntrpo09876tg3234jwxncvzlk}
+      - JWT_EXPIRES_IN=${JWT_EXPIRES_IN:-1d}
+      - COOKIE_EXPIRES_IN=${COOKIE_EXPIRES_IN:-86400000}
+      - BREVO_API_KEY=${BREVO_API_KEY}
+      - REDIS_URL=redis://redis:6379
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - socially-network
+
+  user-service:
+    build:
+      context: .
+      dockerfile: services/user-service/Dockerfile
+    container_name: socially-user-service
+    restart: unless-stopped
+    ports:
+      - "3003:3003"
+    environment:
+      - NODE_ENV=development
+      - PORT=3003
+      - DB_URL=${DB_URL:-mongodb://mongo:27017/socially_users}
+      - USER_DB_URL=${USER_DB_URL}
+      - JWT_SECRET=${JWT_SECRET:-dsdds34hjas23xnssd@#$DDSE#$sdsdscvd56&*^vdqwsx&^%$#sjsdksjsk@##$$$#@!asweokeslslkldcnvfmntrpo09876tg3234jwxncvzlk}
+      - REDIS_URL=redis://redis:6379
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - AWS_REGION=${AWS_REGION:-ap-south-1}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - S3_BUCKET_NAME=${S3_BUCKET_NAME:-socially-media}
+      - S3_PUBLIC_URL=${S3_PUBLIC_URL:-https://socially-media.s3.ap-south-1.amazonaws.com}
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - socially-network
+
+  post-service:
+    build:
+      context: .
+      dockerfile: services/post-service/Dockerfile
+    container_name: socially-post-service
+    restart: unless-stopped
+    ports:
+      - "3004:3004"
+    environment:
+      - NODE_ENV=development
+      - PORT=3004
+      - DB_URL=${DB_URL:-mongodb://mongo:27017/socially_posts}
+      - POST_DB_URL=${POST_DB_URL}
+      - JWT_SECRET=${JWT_SECRET:-dsdds34hjas23xnssd@#$DDSE#$sdsdscvd56&*^vdqwsx&^%$#sjsdksjsk@##$$$#@!asweokeslslkldcnvfmntrpo09876tg3234jwxncvzlk}
+      - REDIS_URL=redis://redis:6379
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - AWS_REGION=${AWS_REGION:-ap-south-1}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - S3_BUCKET_NAME=${S3_BUCKET_NAME:-socially-media}
+      - S3_PUBLIC_URL=${S3_PUBLIC_URL:-https://socially-media.s3.ap-south-1.amazonaws.com}
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - socially-network
+
+  chat-service:
+    build:
+      context: .
+      dockerfile: services/chat-service/Dockerfile
+    container_name: socially-chat-service
+    restart: unless-stopped
+    ports:
+      - "3005:3005"
+    environment:
+      - NODE_ENV=development
+      - PORT=3005
+      - DB_URL=${DB_URL:-mongodb://mongo:27017/socially_chat}
+      - CHAT_DB_URL=${CHAT_DB_URL}
+      - JWT_SECRET=${JWT_SECRET:-dsdds34hjas23xnssd@#$DDSE#$sdsdscvd56&*^vdqwsx&^%$#sjsdksjsk@##$$$#@!asweokeslslkldcnvfmntrpo09876tg3234jwxncvzlk}
+      - REDIS_URL=redis://redis:6379
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - AWS_REGION=${AWS_REGION:-ap-south-1}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - S3_BUCKET_NAME=${S3_BUCKET_NAME:-socially-media}
+      - S3_PUBLIC_URL=${S3_PUBLIC_URL:-https://socially-media.s3.ap-south-1.amazonaws.com}
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - socially-network
+
+  notification-service:
+    build:
+      context: .
+      dockerfile: services/notification-service/Dockerfile
+    container_name: socially-notification-service
+    restart: unless-stopped
+    ports:
+      - "3006:3006"
+    environment:
+      - NODE_ENV=development
+      - PORT=3006
+      - DB_URL=${DB_URL:-mongodb://mongo:27017/socially_notifications}
+      - NOTIFICATION_DB_URL=${NOTIFICATION_DB_URL}
+      - JWT_SECRET=${JWT_SECRET:-dsdds34hjas23xnssd@#$DDSE#$sdsdscvd56&*^vdqwsx&^%$#sjsdksjsk@##$$$#@!asweokeslslkldcnvfmntrpo09876tg3234jwxncvzlk}
+      - REDIS_URL=redis://redis:6379
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - socially-network
+
+networks:
+  socially-network:
+    driver: bridge
+
+volumes:
+  redis_data:
